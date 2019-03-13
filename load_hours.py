@@ -3,7 +3,7 @@ from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
     format_hours, format_notes, extract_task_code, format_date,
-    JiraClient
+    JiraClient, get_project_bucket
 )
 
 
@@ -32,18 +32,20 @@ for entry in time_entries:
         task_code = extract_task_code(
             entry['external_reference']['permalink'])
 
+        project_bucket = get_project_bucket(task_code)
+
         response = jira_client.add_worklog(
-            task_code, entry_date, entry_hours, notes)
+            project_bucket, entry_date, entry_hours, notes)
 
         if response.status_code == 201:
             print("{task} - Worklog {hours} created on {date}".format(
-                task=task_code,
+                task=project_bucket,
                 hours=entry_hours,
                 date=entry_date
             ))
         else:
             print("{task} - Error {status_code} when creating worklog {hours} on {date}".format(
-                task=task_code,
+                task=project_bucket,
                 status_code=response.status_code,
                 hours=entry_hours,
                 date=entry_date
