@@ -29,9 +29,6 @@ for entry in time_entries:
     notes = format_notes(entry['notes'])
 
     if 'external_reference' in entry:
-        if not entry.get('external_reference'):
-            continue
-
         task_code = extract_task_code(
             entry['external_reference']['permalink'])
 
