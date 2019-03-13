@@ -93,6 +93,6 @@ def extract_task_code(external_permalink):
 
 def get_project_bucket(task_code):
     if task_code.startswith('HSF-'):
-        return 'HSF-19454'
+        return 'SA-19454'
     else:
         return 'SA-19457'
