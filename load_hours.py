@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
@@ -10,14 +10,26 @@ from jira_api import (
 harvest_client = HarvestClient()
 jira_client = JiraClient()
 
-date_from = date.today().isoformat()
-date_to = date.today().isoformat()
+# Track the last day it runned
+with open('.aux', 'r') as f:
+    last_day = f.read()
+    if not last_day:
+        last_day = date.today()
+
+if isinstance(last_day, str):
+    last_day = datetime.strptime(last_day, '%d/%m/%Y').date()
+
+date_from = last_day.date()
+date_to = date.today() - timedelta(days=1)
+
+with open('.aux', 'w+') as f:
+    f.write(date_to)
 
 harvest_filters = {
     'user_id': config('HARVEST_USER_ID'),
     'client_id': config('HARVEST_CLIENT_ID'),
-    'from': date_from,
-    'to': date_to
+    'from': date_from.isoformat(),
+    'to': date_to.isoformat()
 }
 
 time_entries = harvest_client.filter_resource(
