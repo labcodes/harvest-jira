@@ -1,7 +1,8 @@
-from datetime import datetime
 import json
 import requests
+from datetime import datetime
 from decouple import config
+from urllib.parse import parse_qs
 
 
 class JiraClient:
@@ -83,7 +84,10 @@ def extract_task_code(external_permalink):
     task_code = external_permalink.split('/')[-1]
 
     if '?' in task_code:
-        task_code = task_code.split('?')[0]
+        if 'selectedIssue' in task_code:
+            task_code = parse_qs(external_permalink)['selectedIssue'][0]
+        else:
+            task_code = task_code.split('?')[0]
 
     if '#' in task_code:
         task_code = task_code.replace('#', '')
