@@ -54,13 +54,7 @@ class JiraClient:
 
 def format_notes(entry_notes):
     notes_row = entry_notes.split('\n')
-    notes = []
-    for row in notes_row:
-        note = {
-            "text": row,
-            "type": "text"
-        }
-        notes.append(note)
+    notes = [{"text": row, "type": "text"} for row in notes_row]
     return notes
 
 
