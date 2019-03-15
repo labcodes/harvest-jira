@@ -22,7 +22,7 @@ harvest_filters = {
 
 time_entries = harvest_client.filter_resource(
     'time_entries', **harvest_filters)
-
+jira_worklogs = {}
 for entry in time_entries:
     entry_date = format_date(entry['created_at'])
     entry_hours = format_hours(entry['hours'])
@@ -34,8 +34,9 @@ for entry in time_entries:
 
         project_bucket = get_project_bucket(task_code)
 
-        worklog = jira_client.get_worklog(project_bucket).json()['worklogs']
-        if is_new_worklog(worklog, entry_date, entry_hours):
+        if not jira_worklogs.get(project_bucket):
+            jira_worklogs[project_bucket] = jira_client.get_worklog(project_bucket).json()['worklogs']
+        if is_new_worklog(jira_worklogs[project_bucket], entry_date, entry_hours):
             response = jira_client.add_worklog(
                 project_bucket, entry_date, entry_hours, notes)
 
