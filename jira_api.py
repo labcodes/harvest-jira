@@ -51,6 +51,23 @@ class JiraClient:
 
         return response
 
+    def get_worklog(self, task_code):
+        worklog_url = '{base_url}/issue/{task_code}/worklog'.format(
+            base_url=self.base_url,
+            task_code=task_code)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+
+        response = requests.get(
+            worklog_url,
+            auth=self.basic_auth,
+            headers=headers
+        )
+        return response
+
 
 def format_notes(entry_notes):
     notes_row = entry_notes.split('\n')
