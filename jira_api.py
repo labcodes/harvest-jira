@@ -32,12 +32,7 @@ class JiraClient:
                 "content": [
                     {
                         "type": "paragraph",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": comments
-                            }
-                        ]
+                        "content": comments
                     }
                 ]
             }
@@ -59,7 +54,8 @@ class JiraClient:
 
 def format_notes(entry_notes):
     notes_row = entry_notes.split('\n')
-    return notes_row[1:len(notes_row)] if len(notes_row) > 1 else ""
+    notes = [{"text": row, "type": "text"} for row in notes_row]
+    return notes
 
 
 def format_date(entry_date):
