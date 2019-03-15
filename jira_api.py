@@ -116,3 +116,15 @@ def get_project_bucket(task_code):
         return 'SA-19454'
     else:
         return 'SA-19457'
+
+
+def is_new_worklog(worklog, entry_date, entry_hours):
+    # Checks if a entry with same started date and duration from harvest exists for the jira user
+    format_date_tz = lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f%z')
+    exists = [
+        wk for wk in worklog
+        if wk['author']['emailAddress'] == config('JIRA_USERNAME') and
+        wk['timeSpent'] == entry_hours and
+        format_date_tz(entry_date) == format_date_tz(wk['started'])
+    ]
+    return False if exists else True
