@@ -86,10 +86,13 @@ def format_hours(entry_hours):
     hours_decimal = float(entry_hours)
     hours = int(hours_decimal)
     minutes = int((hours_decimal - hours) * 60)
-    formatted_hours = '{hours}h {minutes}m'.format(
-        hours=hours,
-        minutes=minutes
-    )
+    if hours:
+        formatted_hours = '{hours}h {minutes}m'.format(
+            hours=hours,
+            minutes=minutes
+        )
+    else:
+        formatted_hours = '{minutes}m'.format(minutes=minutes)
     return formatted_hours
 
 
