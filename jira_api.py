@@ -51,6 +51,23 @@ class JiraClient:
 
         return response
 
+    def get_worklog(self, task_code):
+        worklog_url = '{base_url}/issue/{task_code}/worklog'.format(
+            base_url=self.base_url,
+            task_code=task_code)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+
+        response = requests.get(
+            worklog_url,
+            auth=self.basic_auth,
+            headers=headers
+        )
+        return response
+
 
 def format_notes(entry_notes):
     notes_row = entry_notes.split('\n')
@@ -69,10 +86,13 @@ def format_hours(entry_hours):
     hours_decimal = float(entry_hours)
     hours = int(hours_decimal)
     minutes = int((hours_decimal - hours) * 60)
-    formatted_hours = '{hours}h {minutes}m'.format(
-        hours=hours,
-        minutes=minutes
-    )
+    if hours:
+        formatted_hours = '{hours}h {minutes}m'.format(
+            hours=hours,
+            minutes=minutes
+        )
+    else:
+        formatted_hours = '{minutes}m'.format(minutes=minutes)
     return formatted_hours
 
 
@@ -96,3 +116,15 @@ def get_project_bucket(task_code):
         return 'SA-19454'
     else:
         return 'SA-19457'
+
+
+def is_new_worklog(worklog, entry_date, entry_hours):
+    # Checks if a entry with same started date and duration from harvest exists for the jira user
+    format_date_tz = lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f%z')
+    exists = [
+        wk for wk in worklog
+        if wk['author']['emailAddress'] == config('JIRA_USERNAME') and
+        wk['timeSpent'] == entry_hours and
+        format_date_tz(entry_date) == format_date_tz(wk['started'])
+    ]
+    return False if exists else True
