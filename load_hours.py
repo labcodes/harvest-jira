@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
