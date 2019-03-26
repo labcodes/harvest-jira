@@ -46,22 +46,9 @@ for entry in time_entries:
 
                 status_code = response.status_code
 
-            if response.status_code == 201:
-                print("{task} - Worklog {hours} created on {date}".format(
-                    task=project_bucket,
-                    hours=entry_hours,
-                    date=entry_date
-                ))
+                if response.status_code == 201:
+                    print(f"{project_bucket} - Worklog {entry_hours} created on {entry_date}")
+                else:
+                    print(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date}")
             else:
-                print("{task} - Error {status_code} when creating worklog {hours} on {date}".format(
-                    task=project_bucket,
-                    status_code=response.status_code,
-                    hours=entry_hours,
-                    date=entry_date
-                ))
-        else:
-            print("Worklog for {task} already exists at {date} during {hours}".format(
-                task=project_bucket,
-                date=entry_date,
-                hours=entry_hours
-            ))
+                print(f"Worklog for {task} already exists at {entry_date} during {entry_hours}")
