@@ -10,7 +10,7 @@ from jira_api import (
 harvest_client = HarvestClient()
 jira_client = JiraClient()
 
-# Track the last day it runned
+# Track the last day it ran
 with open('.aux', 'r') as f:
     last_day = f.read()
     if not last_day:
