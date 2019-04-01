@@ -19,11 +19,11 @@ with open('.aux', 'r') as f:
 if isinstance(last_day, str):
     last_day = datetime.strptime(last_day, '%d/%m/%Y').date()
 
-date_from = last_day.date()
+date_from = last_day
 date_to = date.today() - timedelta(days=1)
 
 with open('.aux', 'w+') as f:
-    f.write(date_to)
+    f.write(date_to.strftime('%d/%m/%Y'))
 
 harvest_filters = {
     'user_id': config('HARVEST_USER_ID'),
@@ -59,8 +59,8 @@ for entry in time_entries:
                 status_code = response.status_code
 
                 if response.status_code == 201:
-                    print(f"{project_bucket} - Worklog {entry_hours} created on {entry_date}")
+                    print(f"{project_bucket} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
                 else:
-                    print(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date}")
+                    print(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
             else:
-                print(f"Worklog for {task} already exists at {entry_date} during {entry_hours}")
+                print(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
