@@ -16,7 +16,8 @@ jira_client = JiraClient()
 
 date_from, date_to = get_date_range()
 
-cprint.info("Updating worklog from {date_from.strptime(DATE_FORMAT)} to {date_to.strptime(DATE_FORMAT}\n")
+s_start, s_end = date_from.isoformat(), date_to.isoformat()
+cprint.info(f"Updating worklog from {s_start} to {s_end}\n")
 
 harvest_filters = {
     'user_id': config('HARVEST_USER_ID'),
@@ -52,10 +53,10 @@ for entry in time_entries:
                 status_code = response.status_code
 
                 if response.status_code == 201:
-                    print(f"{project_bucket} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
+                    cprint.ok(f"{project_bucket} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
                 else:
-                    print(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
+                    cprint.err(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
             else:
-                print(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
+                cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
 
 update_last_day(date_to)
