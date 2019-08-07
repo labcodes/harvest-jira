@@ -3,3 +3,4 @@ env/
 .DS_Store
 .aux
 __pycache__
+.aux_days

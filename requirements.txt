@@ -7,3 +7,4 @@ six==1.11.0
 tapioca-harvest==2.0
 tapioca-wrapper==0.5.3
 urllib3==1.24.1
+cprint==1.1

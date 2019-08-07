@@ -1,29 +1,22 @@
-from datetime import date, datetime, timedelta
+from cprint import cprint
 from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
     format_hours, format_notes, extract_task_code, format_date,
     JiraClient, get_project_bucket, is_new_worklog
 )
+from hours_calendar import get_date_range, update_last_day, DATE_FORMAT
 
 
 harvest_client = HarvestClient()
 jira_client = JiraClient()
 
 # Track the last day it ran
-with open('.aux', 'r') as f:
-    last_day = f.read()
-    if not last_day:
-        last_day = date.today()
 
-if isinstance(last_day, str):
-    last_day = datetime.strptime(last_day, '%d/%m/%Y').date()
 
-date_from = last_day
-date_to = date.today() - timedelta(days=1)
+date_from, date_to = get_date_range()
 
-with open('.aux', 'w+') as f:
-    f.write(date_to.strftime('%d/%m/%Y'))
+cprint.info("Updating worklog from {date_from.strptime(DATE_FORMAT)} to {date_to.strptime(DATE_FORMAT}\n")
 
 harvest_filters = {
     'user_id': config('HARVEST_USER_ID'),
@@ -64,3 +57,5 @@ for entry in time_entries:
                     print(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
             else:
                 print(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
+
+update_last_day(date_to)
