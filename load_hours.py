@@ -8,6 +8,11 @@ from jira_api import (
 from hours_calendar import get_date_range, update_last_day, DATE_FORMAT
 
 
+def format_harvest_url(entry_date):
+    split_date = entry_date.split('-')
+    return f"https://labcodes.harvestapp.com/time/day/{split_date[0]}/{split_date[1]}/{split_date[2][:2]}/"
+
+
 harvest_client = HarvestClient()
 jira_client = JiraClient()
 
@@ -38,7 +43,7 @@ for entry in time_entries:
             task_code = extract_task_code(
                 entry['external_reference']['permalink'])
         except TypeError:
-            cprint.warn(f"Task {entry['id']} from {entry_date} has no permalink and was skipped. Make sure this task really should have no permalink.")
+            cprint.warn(f"Task {entry['id']} from {entry_date} has no permalink and was skipped. Make sure this task really should have no permalink: {format_harvest_url(entry_date)}")
             continue
 
         if task_code != 'SA-15876':  # We are skipping scrum task since we are adding worklog manually
