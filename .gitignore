@@ -4,3 +4,7 @@ env/
 .aux
 __pycache__
 .aux_days
+bin/
+include/
+lib/
+share/
