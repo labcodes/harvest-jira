@@ -11,9 +11,6 @@ from hours_calendar import get_date_range, update_last_day, DATE_FORMAT
 harvest_client = HarvestClient()
 jira_client = JiraClient()
 
-# Track the last day it ran
-
-
 date_from, date_to = get_date_range()
 
 s_start, s_end = date_from.isoformat(), date_to.isoformat()
@@ -34,11 +31,15 @@ jira_worklogs = {}
 for entry in time_entries:
     entry_date = format_date(entry['created_at'])
     entry_hours = format_hours(entry['hours'])
-    notes = format_notes(entry['notes'])
+    notes = format_notes(entry.get('notes') or '')
 
     if 'external_reference' in entry:
-        task_code = extract_task_code(
-            entry['external_reference']['permalink'])
+        try:
+            task_code = extract_task_code(
+                entry['external_reference']['permalink'])
+        except TypeError:
+            cprint.warn(f"Task {entry['id']} from {entry_date} has no permalink and was skipped. Make sure this task really should have no permalink.")
+            continue
 
         if task_code != 'SA-15876':  # We are skipping scrum task since we are adding worklog manually
             project_bucket = get_project_bucket(task_code)
