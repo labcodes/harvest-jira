@@ -29,3 +29,4 @@ def get_date_range():
 def update_last_day(new_last_day):
     with open(LAST_DAY_FILE, 'w') as f:
         f.write(new_last_day.strftime(DATE_FORMAT))
+    cprint.ok(f"Next time you run the script, it'll start from {new_last_day.isoformat()}.")

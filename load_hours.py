@@ -65,4 +65,5 @@ for entry in time_entries:
             else:
                 cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
 
+print()
 update_last_day(date_to)
