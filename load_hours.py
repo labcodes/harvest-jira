@@ -60,6 +60,7 @@ for entry in time_entries:
                     cprint.ok(f"{task_code} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
                 else:
                     cprint.err(f"{task_code} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
+                    cprint.err(f"{task_code} - Error message: {response.text}")
             else:
                 cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
 
