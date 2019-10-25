@@ -3,7 +3,7 @@ from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
     format_hours, format_notes, extract_task_code, format_date,
-    JiraClient, get_project_bucket, is_new_worklog
+    JiraClient, is_new_worklog
 )
 from hours_calendar import get_date_range, update_last_day, DATE_FORMAT
 
@@ -47,21 +47,20 @@ for entry in time_entries:
             continue
 
         if task_code != 'SA-15876':  # We are skipping scrum task since we are adding worklog manually
-            project_bucket = get_project_bucket(task_code)
+            if not jira_worklogs.get(task_code):
+                jira_worklogs[task_code] = jira_client.get_worklog(task_code).json()['worklogs']
 
-            if not jira_worklogs.get(project_bucket):
-                jira_worklogs[project_bucket] = jira_client.get_worklog(project_bucket).json()['worklogs']
-
-            if is_new_worklog(jira_worklogs[project_bucket], entry_date, entry_hours):
+            if is_new_worklog(jira_worklogs[task_code], entry_date, entry_hours):
                 response = jira_client.add_worklog(
-                    project_bucket, entry_date, entry_hours, notes)
+                    task_code, entry_date, entry_hours, notes)
 
                 status_code = response.status_code
 
                 if response.status_code == 201:
-                    cprint.ok(f"{project_bucket} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
+                    cprint.ok(f"{task_code} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
                 else:
-                    cprint.err(f"{project_bucket} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
+                    cprint.err(f"{task_code} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
+                    cprint.err(f"{task_code} - Error message: {response.text}")
             else:
                 cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
 
