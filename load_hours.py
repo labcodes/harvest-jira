@@ -46,23 +46,22 @@ for entry in time_entries:
             cprint.warn(f"Task {entry['id']} from {entry_date} has no permalink and was skipped. Make sure this task really should have no permalink: {format_harvest_url(entry_date)}")
             continue
 
-        if task_code != 'SA-15876':  # We are skipping scrum task since we are adding worklog manually
-            if not jira_worklogs.get(task_code):
-                jira_worklogs[task_code] = jira_client.get_worklog(task_code).json()['worklogs']
+        if not jira_worklogs.get(task_code):
+            jira_worklogs[task_code] = jira_client.get_worklog(task_code).json()['worklogs']
 
-            if is_new_worklog(jira_worklogs[task_code], entry_date, entry_hours):
-                response = jira_client.add_worklog(
-                    task_code, entry_date, entry_hours, notes)
+        if is_new_worklog(jira_worklogs[task_code], entry_date, entry_hours):
+            response = jira_client.add_worklog(
+                task_code, entry_date, entry_hours, notes)
 
-                status_code = response.status_code
+            status_code = response.status_code
 
-                if response.status_code == 201:
-                    cprint.ok(f"{task_code} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
-                else:
-                    cprint.err(f"{task_code} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
-                    cprint.err(f"{task_code} - Error message: {response.text}")
+            if response.status_code == 201:
+                cprint.ok(f"{task_code} - Worklog {entry_hours} created on {entry_date} for task {task_code}")
             else:
-                cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
+                cprint.err(f"{task_code} - Error {status_code} when creating worklog {entry_hours} on {entry_date} for task {task_code}")
+                cprint.err(f"{task_code} - Error message: {response.text}")
+        else:
+            cprint.info(f"Worklog for {task_code} already exists at {entry_date} during {entry_hours}")
 
 print()
 update_last_day(date_to)
