@@ -1,8 +1,11 @@
 import json
 import requests
+import re
 from datetime import datetime
 from decouple import config
 from urllib.parse import parse_qs
+
+JIRA_TICKET_REGEX = r'([A-Z]{1,10}-\d+)'
 
 
 class JiraClient:
@@ -108,6 +111,19 @@ def extract_task_code(external_permalink):
     if '#' in task_code:
         task_code = task_code.replace('#', '')
 
+    return task_code
+
+
+def validate_task_code(task_code):
+    match = re.search(JIRA_TICKET_REGEX, task_code, flags=re.IGNORECASE)
+    return True if match else False
+
+
+def extract_task_code_from_text(note):
+    task_code = ''
+    match = re.search(JIRA_TICKET_REGEX, note, flags=re.IGNORECASE)
+    if match:
+        task_code = match.group()
     return task_code
 
 

@@ -2,8 +2,8 @@ from cprint import cprint
 from decouple import config
 from harvest_api import HarvestClient
 from jira_api import (
-    format_hours, format_notes, extract_task_code, format_date,
-    JiraClient, is_new_worklog
+    format_hours, format_notes, validate_task_code, extract_task_code,
+    extract_task_code_from_text, format_date, JiraClient, is_new_worklog
 )
 from hours_calendar import get_date_range, update_last_day, DATE_FORMAT
 
@@ -42,6 +42,9 @@ for entry in time_entries:
         try:
             task_code = extract_task_code(
                 entry['external_reference']['permalink'])
+            is_valid = validate_task_code(task_code)
+            if not is_valid:
+                task_code = extract_task_code_from_text(entry['notes'])
         except TypeError:
             cprint.warn(f"Task {entry['id']} from {entry_date} has no permalink and was skipped. Make sure this task really should have no permalink: {format_harvest_url(entry_date)}")
             continue
